@@ -1,4 +1,6 @@
+import 'package:chat/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'package:chat/models/usuario.dart';
@@ -8,22 +10,28 @@ class UsuariosPage extends StatelessWidget {
       RefreshController(initialRefresh: false);
 
   final usuarios = [
-    Usuario(id: '1', nombre: 'Limberg', email: 'test1@test.com', online: true),
-    Usuario(id: '2', nombre: 'José', email: 'test2@test.com', online: false),
-    Usuario(id: '3', nombre: 'Anzaldo', email: 'test3@test.com', online: true),
+    Usuario(uid: '1', nombre: 'Limberg', email: 'test1@test.com', online: true),
+    Usuario(uid: '2', nombre: 'José', email: 'test2@test.com', online: false),
+    Usuario(uid: '3', nombre: 'Anzaldo', email: 'test3@test.com', online: true),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final usuario = authService.usuario;
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 1,
-          title: Text('Mi Nombre', style: TextStyle(color: Colors.black54)),
+          title: Text(usuario.nombre, style: TextStyle(color: Colors.black54)),
           leading: IconButton(
             icon: Icon(Icons.exit_to_app),
             color: Colors.black54,
-            onPressed: () {},
+            onPressed: () {
+              //TODO: desconectarse del socket
+              Navigator.pushReplacementNamed(context, 'login');
+              AuthService.deleteToken();
+            },
           ),
         ),
         body: SmartRefresher(
